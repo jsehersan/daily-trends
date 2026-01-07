@@ -11,7 +11,7 @@ services:
             - "8890:80"
         volumes:
             - ~/.ssh:/home/$UNAME/.ssh
-            - ../:/var/www
+            - ./:/var/www/casfid-technical-test
 
     database_casfid_technical_test:
         image: mysql:8.0
