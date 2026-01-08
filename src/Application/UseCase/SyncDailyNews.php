@@ -16,16 +16,17 @@ class SyncDailyNews
         private iterable $scrapers,
         private FeedRepositoryInterface $feedRepository,
         private LoggerInterface $logger
-    ) {}
+    ) {
+    }
 
-    public function execute(int $limit = 5, ?string $requestedSource = null): void
+    public function execute(int $limit = 5, ?string $requestedSourceName = null): void
     {
         /** @var NewsScraperInterface $scraper */
         foreach ($this->scrapers as $scraper) {
-            $sourceName = $scraper->getSource();
+            $sourceName = $scraper->getSource()->name;
 
             // Si se pidió una fuente específica y no es esta, saltar
-            if ($requestedSource && $sourceName !== $requestedSource) {
+            if ($requestedSourceName && $sourceName !== $requestedSourceName) {
                 continue;
             }
 
@@ -41,7 +42,7 @@ class SyncDailyNews
                     //Controlamos si ya existe
                     $exists = $this->feedRepository->findOneByUrlAndSource(
                         $feed->getUrl(),
-                        $feed->getSource()
+                        $feed->getSource()->value
                     );
                     if ($exists) {
                         $skippedCount++;
@@ -61,7 +62,7 @@ class SyncDailyNews
                 $this->logger->info("Finalizado $sourceName. Noticias encontradas: " . count($feeds));
             } catch (NewsScrapingException $e) {
                 // Capturamos NUESTRAS excepciones base
-                $this->logger->error("Se saltó el scraper {$scraper->getSource()} por error: " . $e->getMessage());
+                $this->logger->error("Se saltó el scraper {$scraper->getSource()->value} por error: " . $e->getMessage());
             } catch (\Exception $e) {
                 $this->logger->error("Error scrapeando $sourceName: " . $e->getMessage());
             }
