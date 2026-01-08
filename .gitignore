@@ -10,3 +10,4 @@
 ###< symfony/framework-bundle ###
 .env
 .env.dev
+composer.lock
