@@ -2,22 +2,21 @@
 
 namespace App\Domain\Entity;
 
-use App\Domain\Repository\FeedRepositoryInterface; // La crearemos luego
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity] // No vinculamos repositorio aquí todavía para no acoplar, o usamos uno custom
+#[ORM\Entity]
 #[ORM\Table(name: 'feeds')]
 #[ORM\UniqueConstraint(name: 'unique_source_url', columns: ['source', 'url'])]
 class Feed
 {
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')] // 1. Estrategia CUSTOM
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')] // 2. Definición del generador
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 255)]
@@ -32,13 +31,19 @@ class Feed
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
     #[Assert\Choice(choices: ['El Pais', 'El Mundo', 'Manual'])]
-    private ?string $source = null; // Podría ser un Enum en PHP 8.1+, lo dejamos string simple por ahora
+    private ?string $source = null; // Podría ser un Enum, lo dejamos string simple por ahora
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $scrapedAt = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)] // TEXT porque puede ser muy largo
+    private ?string $body = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $image = null;
 
     public function __construct()
     {
@@ -94,5 +99,30 @@ class Feed
     public function getScrapedAt(): ?\DateTimeImmutable
     {
         return $this->scrapedAt;
+    }
+    public function setScrapedAt(\DateTimeImmutable $scrapedAt): static
+    {
+        $this->scrapedAt = $scrapedAt;
+        return $this;
+    }
+
+    public function getBody(): ?string
+    {
+        return $this->body;
+    }
+    public function setBody(?string $body): static
+    {
+        $this->body = $body;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+    public function setImage(?string $image): static
+    {
+        $this->image = $image;
+        return $this;
     }
 }
