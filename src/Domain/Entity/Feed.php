@@ -2,6 +2,7 @@
 
 namespace App\Domain\Entity;
 
+use App\Domain\Enum\SourceEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -28,10 +29,9 @@ class Feed
     #[Assert\Url]
     private ?string $url = null;
 
-    #[ORM\Column(length: 50)]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: ['El Pais', 'El Mundo', 'Manual'])]
-    private ?string $source = null; // Podría ser un Enum, lo dejamos string simple por ahora
+    #[ORM\Column(length: 50, enumType: SourceEnum::class)]
+    #[Assert\NotNull]
+    private ?SourceEnum $source = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
@@ -76,11 +76,11 @@ class Feed
         return $this;
     }
 
-    public function getSource(): ?string
+    public function getSource(): ?SourceEnum
     {
         return $this->source;
     }
-    public function setSource(string $source): static
+    public function setSource(SourceEnum $source): static
     {
         $this->source = $source;
         return $this;
