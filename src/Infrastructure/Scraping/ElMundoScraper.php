@@ -11,7 +11,7 @@ class ElMundoScraper extends AbstractHtmlScraper
         return SourceEnum::EL_MUNDO;
     }
 
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         return 'https://www.elmundo.es';
     }

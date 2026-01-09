@@ -11,7 +11,7 @@ class ElPaisScraper extends AbstractHtmlScraper
         return SourceEnum::EL_PAIS;
     }
 
-    protected function getUrl(): string
+    public function getUrl(): string
     {
         return 'https://elpais.com';
     }

@@ -19,7 +19,7 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
     ) {}
 
     abstract protected function getSelectors(): array;
-    abstract protected function getUrl(): string;
+    abstract public function getUrl(): string;
 
     public function scrape(int $limit = 5): array
     {
@@ -30,22 +30,9 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
             return [];
         }
 
-        $crawler = new Crawler($htmlIndex);
         $feeds = [];
-        $selectors = $this->getSelectors();
         //Obtenemos las urls de los artículos
-        $urlsToScrape = $crawler->filter($selectors['article_link'])
-            ->slice(0, $limit)
-            ->each(function (Crawler $node) {
-                $url = $node->attr('href');
-                // Normalización de URL relativa a absoluta
-                if (!str_starts_with($url, 'http')) {
-                    $baseUrl = rtrim($this->getUrl(), '/');
-                    $path = ltrim($url, '/');
-                    return "$baseUrl/$path";
-                }
-                return $url;
-            });
+        $urlsToScrape = $this->extractArticleLinks($htmlIndex, $limit);
 
         foreach ($urlsToScrape as $url) {
             try {
@@ -142,5 +129,27 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
             }
         }
         return null;
+    }
+
+
+    public function extractArticleLinks(string $html, int $limit): array
+    {
+        $crawler = new Crawler($html);
+        $selectors = $this->getSelectors();
+
+        return $crawler->filter($selectors['article_link'])
+            ->slice(0, $limit)
+            ->each(function (Crawler $node) {
+                $url = $node->attr('href');
+
+                // Normalización de URL relativa a absoluta
+                if (!str_starts_with($url, 'http')) {
+                    $baseUrl = rtrim($this->getUrl(), '/');
+                    $path = ltrim($url, '/');
+                    return "$baseUrl/$path";
+                }
+
+                return $url;
+            });
     }
 }

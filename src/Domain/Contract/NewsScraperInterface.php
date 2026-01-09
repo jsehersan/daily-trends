@@ -13,4 +13,5 @@ interface NewsScraperInterface
      */
     public function scrape(int $limit = 5): array; //Si cambian los requerimientos a más feeds, valorar un Paginate. 
     public function getSource(): SourceEnum;
+    public function getUrl(): string;
 }
