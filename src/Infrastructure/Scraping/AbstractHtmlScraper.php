@@ -16,7 +16,8 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
     public function __construct(
         protected ScrapingClient $client,
         protected LoggerInterface $logger
-    ) {}
+    ) {
+    }
 
     abstract protected function getSelectors(): array;
     abstract public function getUrl(): string;
@@ -56,24 +57,20 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
         $crawler = new Crawler($html);
         $selectors = $this->getSelectors();
 
-        $feed = new Feed();
-        $feed->setUrl($url);
-        $feed->setSource($this->getSource());
-        $feed->setScrapedAt(new \DateTimeImmutable());
-
-        // Validaciones y extracción usando Fallbacks
+        // Extraer title (obligatorio)
         $title = $this->extractWithFallback($crawler, $selectors['title'], $url, 'text', null);
         if (!$title)
             throw FeedParsingException::missingElement('title', $url);
-        $feed->setTitle($title);
 
+        // Extraer fecha
         $dateStr = $this->extractWithFallback($crawler, $selectors['date'], $url, 'attr', 'datetime');
         try {
-            $feed->setPublishedAt($dateStr ? new \DateTimeImmutable($dateStr) : new \DateTimeImmutable());
+            $publishedAt = $dateStr ? new \DateTimeImmutable($dateStr) : new \DateTimeImmutable();
         } catch (\Exception) {
-            $feed->setPublishedAt(new \DateTimeImmutable());
+            $publishedAt = new \DateTimeImmutable();
         }
 
+        // Extraer imagen (opcional)
         $imgSrc = $this->extractWithFallback($crawler, $selectors['image'], $url, 'attr', 'src');
 
         if (!$imgSrc) {
@@ -83,17 +80,23 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
                 $this->logger->info("Imagen recuperada de meta-tag en: $url");
             }
         }
-        if ($imgSrc)
-            $feed->setImage($imgSrc);
 
+        // Extraer body (obligatorio)
         $body = $this->extractBodyText($crawler, $selectors['body']);
         if (empty($body)) {
             // Lanzamos la excepcion y lo saltamos, puede ser una landing o algo por el estilo, no una noticia.
             throw FeedParsingException::missingElement('body (no se encuentra el contenido)', $url);
         }
-        $feed->setBody($body);
 
-        return $feed;
+        // Crear Feed con todos los datos recolectados
+        return new Feed(
+            title: $title,
+            url: $url,
+            source: $this->getSource(),
+            body: $body,
+            publishedAt: $publishedAt,
+            image: $imgSrc
+        );
     }
 
     //Reintentamos tantas como selectores tengamos configurados, avisamos si se ha usado un fallback para generar una alerta el equipo y revisar si ha cambiado el diseño.

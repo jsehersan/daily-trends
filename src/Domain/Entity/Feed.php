@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity]
 #[ORM\Table(name: 'feeds')]
 #[ORM\UniqueConstraint(name: 'unique_source_url', columns: ['source', 'url'])]
+
 class Feed
 {
     #[ORM\Id]
@@ -20,109 +21,68 @@ class Feed
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    private ?string $title = null;
-
-    #[ORM\Column(length: 500)]
-    #[Assert\NotBlank]
-    #[Assert\Url]
-    private ?string $url = null;
-
-    #[ORM\Column(length: 50, enumType: SourceEnum::class)]
-    #[Assert\NotNull]
-    private ?SourceEnum $source = null;
-
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private ?\DateTimeImmutable $publishedAt = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $scrapedAt = null;
+    private \DateTimeImmutable $scrapedAt;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)] // TEXT porque puede ser muy largo
-    private ?string $body = null;
+    public function __construct(
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        private string $title,
 
-    #[ORM\Column(length: 500, nullable: true)]
-    private ?string $image = null;
+        #[ORM\Column(length: 500)]
+        #[Assert\NotBlank]
+        #[Assert\Url]
+        private string $url,
 
-    public function __construct()
-    {
+        #[ORM\Column(length: 50, enumType: SourceEnum::class)]
+        #[Assert\NotNull]
+        private SourceEnum $source,
+
+        #[ORM\Column(type: Types::TEXT)]
+        #[Assert\NotBlank]
+        private string $body,
+
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+        #[Assert\NotNull]
+        private \DateTimeImmutable $publishedAt,
+
+        #[ORM\Column(length: 500, nullable: true)]
+        private ?string $image = null,
+    ) {
         $this->scrapedAt = new \DateTimeImmutable();
     }
 
-    // Getters y Setters básicos
+
     public function getId(): ?Uuid
     {
         return $this->id;
     }
-
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    public function getUrl(): ?string
+    public function getUrl(): string
     {
         return $this->url;
     }
-    public function setUrl(string $url): static
-    {
-        $this->url = $url;
-        return $this;
-    }
-
-    public function getSource(): ?SourceEnum
+    public function getSource(): SourceEnum
     {
         return $this->source;
     }
-    public function setSource(SourceEnum $source): static
-    {
-        $this->source = $source;
-        return $this;
-    }
-
-    public function getPublishedAt(): ?\DateTimeImmutable
-    {
-        return $this->publishedAt;
-    }
-    public function setPublishedAt(?\DateTimeImmutable $publishedAt): static
-    {
-        $this->publishedAt = $publishedAt;
-        return $this;
-    }
-
-    public function getScrapedAt(): ?\DateTimeImmutable
-    {
-        return $this->scrapedAt;
-    }
-    public function setScrapedAt(\DateTimeImmutable $scrapedAt): static
-    {
-        $this->scrapedAt = $scrapedAt;
-        return $this;
-    }
-
-    public function getBody(): ?string
+    public function getBody(): string
     {
         return $this->body;
     }
-    public function setBody(?string $body): static
+    public function getPublishedAt(): \DateTimeImmutable
     {
-        $this->body = $body;
-        return $this;
+        return $this->publishedAt;
     }
-
     public function getImage(): ?string
     {
         return $this->image;
     }
-    public function setImage(?string $image): static
+    public function getScrapedAt(): \DateTimeImmutable
     {
-        $this->image = $image;
-        return $this;
+        return $this->scrapedAt;
     }
 }
