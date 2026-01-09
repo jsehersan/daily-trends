@@ -19,7 +19,7 @@ class ElMundoScraper extends AbstractHtmlScraper
     protected function getSelectors(): array
     {
         return [
-            'article_link' => 'a.ue-c-cover-content__link, article header a, article h2 a',
+            'article_link' => 'article:not(.ue-c-cover-content--wgt-s) header a, article:not(.ue-c-cover-content--wgt-s) h2 a',
 
             'title' => [
                 'h1.ue-c-article__headline',
