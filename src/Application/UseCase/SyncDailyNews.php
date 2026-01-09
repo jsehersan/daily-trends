@@ -58,6 +58,7 @@ class SyncDailyNews
                     $this->feedRepository->flush();
                 }
 
+                //TODO crear una respuesta dto con una estructura tipada para dar feedback de que ha pasado aqui.
 
                 $this->logger->info("Finalizado $sourceName. Noticias encontradas: " . count($feeds));
             } catch (NewsScrapingException $e) {
