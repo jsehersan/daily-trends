@@ -31,4 +31,11 @@ class DoctrineFeedRepository extends ServiceEntityRepository implements FeedRepo
     {
         $this->getEntityManager()->flush();
     }
+
+    public function truncate(): void
+    {
+        $connection = $this->getEntityManager()->getConnection();
+        $tableName = $this->getEntityManager()->getClassMetadata(Feed::class)->getTableName();
+        $connection->executeStatement('TRUNCATE TABLE ' . $tableName);
+    }
 }
