@@ -11,3 +11,9 @@
 .env
 .env.dev
 composer.lock
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+/composer.lock
