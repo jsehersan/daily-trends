@@ -16,8 +16,7 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
     public function __construct(
         protected ScrapingClient $client,
         protected LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     abstract protected function getSelectors(): array;
     abstract protected function getUrl(): string;
@@ -89,10 +88,22 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
         }
 
         $imgSrc = $this->extractWithFallback($crawler, $selectors['image'], $url, 'attr', 'src');
+
+        if (!$imgSrc) {
+            $metaImage = $crawler->filter('meta[property="og:image"]');
+            if ($metaImage->count() > 0) {
+                $imgSrc = $metaImage->attr('content');
+                $this->logger->info("Imagen recuperada de meta-tag en: $url");
+            }
+        }
         if ($imgSrc)
             $feed->setImage($imgSrc);
 
         $body = $this->extractBodyText($crawler, $selectors['body']);
+        if (empty($body)) {
+            // Lanzamos la excepcion y lo saltamos, puede ser una landing o algo por el estilo, no una noticia.
+            throw FeedParsingException::missingElement('body (no se encuentra el contenido)', $url);
+        }
         $feed->setBody($body);
 
         return $feed;
