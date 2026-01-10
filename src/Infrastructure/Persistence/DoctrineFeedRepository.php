@@ -72,4 +72,9 @@ class DoctrineFeedRepository extends ServiceEntityRepository implements FeedRepo
             totalPages: $totalPages
         );
     }
+
+    public function findById(string $id): ?Feed
+    {
+        return $this->find($id);
+    }
 }

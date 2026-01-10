@@ -12,4 +12,5 @@ interface FeedRepositoryInterface
     public function flush(): void;
     public function truncate(): void;
     public function findAllPaginated(int $page, int $limit, string $sortBy, string $sortOrder): PaginatedResult;
+    public function findById(string $id): ?Feed;
 }

@@ -15,14 +15,13 @@ class ListFeedsController extends AbstractController
         private readonly ListFeeds $useCase
     ) {
     }
-
     // La ruta es '' porque en routes.yaml ya definimos el prefijo /feeds
     #[Route('', name: 'api_feeds_list', methods: ['GET'])]
     public function __invoke(
         #[MapQueryString] ?ListFeedsRequest $request = null
     ): JsonResponse {
 
-
+        
         $request ??= new ListFeedsRequest();
 
         $result = $this->useCase->execute(
