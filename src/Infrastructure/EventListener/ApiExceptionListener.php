@@ -22,6 +22,7 @@ class ApiExceptionListener
     }
     public function onKernelException(ExceptionEvent $event): void
     {
+        
         $request = $event->getRequest();
 
         // Solo seguimos si la peticion es json (configurado en routes.yaml)
@@ -77,10 +78,13 @@ class ApiExceptionListener
         }
 
         // En modo desarrollo, añadimos más info para debug
-        if ($_ENV['APP_ENV'] === 'dev') {
+        if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
             $data['debug'] = [
                 'class' => get_class($exception),
-                'trace' => $exception->getTraceAsString(),
+                'message' => $exception->getMessage(), 
+                'file' => $exception->getFile(),       
+                'line' => $exception->getLine(),       
+                'trace' => $this->formatTrace($exception->getTrace()),
             ];
         }
 
@@ -95,5 +99,18 @@ class ApiExceptionListener
             $errors[$field] = $violation->getMessage();
         }
         return $errors;
+    }
+    private function formatTrace(array $trace): array
+    {
+        return array_map(function ($step) {
+            return [
+                'file' => $step['file'] ?? 'unknown',
+                'line' => $step['line'] ?? 0,
+                'function' => $step['function'] ?? 'unknown',
+                'class' => $step['class'] ?? null,
+                'type' => $step['type'] ?? null,
+                // 'args' => $step['args'] ?? [], 
+            ];
+        }, $trace);
     }
 }
