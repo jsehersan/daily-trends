@@ -1,5 +1,10 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+
+
+#Agrupamos las rutas de feeds y en controlador escribimos ruta relativo a esto, en el futuro 
+#si hubiera que versionar (ej: /api/v1/feeds) o cambiar algo es más fácil tocarlo de la config que ir controller por controller
+api_feeds:
+    resource: ../src/Infrastructure/Controller/Api/Feed/
     type: attribute
+    prefix: '%app.api_root%/v1/feeds'
+    defaults:
+        _format: json

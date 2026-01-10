@@ -2,7 +2,8 @@
 
 namespace App\Domain\Exception;
 
-class DomainException extends \RuntimeException
+// De esta colgaran todas la excepciones no tecnicas del dominio
+class DomainException extends \Exception
 {
 
 }
