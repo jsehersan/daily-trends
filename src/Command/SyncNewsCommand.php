@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Application\UseCase\SyncDailyNews;
+use App\Application\UseCase\Feed\SyncDailyNews;
 use App\Domain\Repository\FeedRepositoryInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

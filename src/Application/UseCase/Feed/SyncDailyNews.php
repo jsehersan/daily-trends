@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Application\UseCase;
+namespace App\Application\UseCase\Feed;
 
 
 use App\Domain\Contract\NewsScraperInterface;
-use App\Domain\Exception\NewsScrapingException;
+use App\Domain\Exception\Scraping\NewsScrapingException;
 use App\Domain\Repository\FeedRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;

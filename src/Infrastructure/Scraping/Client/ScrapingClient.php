@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Scraping\Client;
 
-use App\Domain\Exception\FeedUnreachableException;
+use App\Domain\Exception\Scraping\FeedUnreachableException;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -14,7 +14,8 @@ class ScrapingClient
     public function __construct(
         private HttpClientInterface $client,
         private LoggerInterface $logger
-    ) {}
+    ) {
+    }
 
     /**
      * @throws FeedUnreachableException Si tras reintentos no se puede obtener el HTML

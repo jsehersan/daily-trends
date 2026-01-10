@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\UseCase;
 
-use App\Application\UseCase\SyncDailyNews;
+use App\Application\UseCase\Feed\SyncDailyNews;
 use App\Domain\Contract\NewsScraperInterface;
 use App\Domain\Entity\Feed;
 use App\Domain\Enum\SourceEnum;

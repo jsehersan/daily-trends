@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Exception;
+namespace App\Domain\Exception\Scraping;
 
 class FeedParsingException extends NewsScrapingException
 {
