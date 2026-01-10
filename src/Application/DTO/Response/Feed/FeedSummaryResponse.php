@@ -4,7 +4,7 @@ namespace App\Application\DTO\Response\Feed;
 
 use App\Domain\Entity\Feed;
 
-readonly class FeedResponse
+readonly class FeedSummaryResponse
 {
     public function __construct(
         public string $id,

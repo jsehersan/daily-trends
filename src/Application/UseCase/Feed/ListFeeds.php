@@ -2,7 +2,7 @@
 
 namespace App\Application\UseCase\Feed;
 
-use App\Application\DTO\Response\Feed\FeedResponse;
+use App\Application\DTO\Response\Feed\FeedSummaryResponse;
 use App\Application\DTO\Response\PaginatedResult;
 use App\Domain\Repository\FeedRepositoryInterface;
 
@@ -20,7 +20,7 @@ readonly class ListFeeds
 
         // Convertimos las entidades a DTOs de respuesta
         $dtos = array_map(
-            fn($feed) => FeedResponse::fromEntity($feed),
+            fn($feed) => FeedSummaryResponse::fromEntity($feed),
             $rawResult->items
         );
 
