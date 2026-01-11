@@ -37,7 +37,7 @@ class DoctrineFeedRepository extends ServiceEntityRepository implements FeedRepo
 
     }
 
-    public function findOneByUrlAndSource(string $url, string $source): ?Feed
+    public function findOneByUrlAndSource(string $url, SourceEnum $source): ?Feed
     {
         return $this->findOneBy(['url' => $url, 'source' => $source]);
     }
