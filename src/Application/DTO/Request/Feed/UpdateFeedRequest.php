@@ -11,7 +11,7 @@ readonly class UpdateFeedRequest
         #[Assert\Length(min: 5, max: 255)]
         public ?string $title = null,
 
-        #[Assert\Url]
+        #[Assert\Url(requireTld: true)]
         public ?string $url = null,
 
         public ?string $body = null,
@@ -25,7 +25,7 @@ readonly class UpdateFeedRequest
         #[Assert\DateTime(format: 'Y-m-d H:i:s')]
         public ?string $publishedAt = null,
 
-        #[Assert\Url]
+        #[Assert\Url(requireTld: true)]
         public ?string $image = null,
 
         // Para indicar el borrado de la imagen

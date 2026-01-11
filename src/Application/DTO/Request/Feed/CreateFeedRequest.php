@@ -13,7 +13,7 @@ readonly class CreateFeedRequest
         public string $title,
 
         #[Assert\NotBlank]
-        #[Assert\Url]
+        #[Assert\Url(requireTld: true)]
         public string $url,
 
         #[Assert\NotBlank]
@@ -31,7 +31,7 @@ readonly class CreateFeedRequest
         #[Assert\DateTime(format: 'Y-m-d H:i:s', message: "Invalid date, must be this format Y-m-d H:i:s")]
         public string $publishedAt,
 
-        #[Assert\Url]
+        #[Assert\Url(requireTld: true)]
         public ?string $image = null,
     ) {
     }
