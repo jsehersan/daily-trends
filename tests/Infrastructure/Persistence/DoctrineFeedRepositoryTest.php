@@ -53,7 +53,7 @@ class DoctrineFeedRepositoryTest extends KernelTestCase
         // Recuperar la entidad usando el método específico del repositorio
         $savedFeed = $this->repository->findOneByUrlAndSource(
             'https://test-example.com/integration',
-            SourceEnum::EL_MUNDO->value // O el enum directo si tu método lo acepta
+            SourceEnum::EL_MUNDO
         );
 
         // Verificar que los datos recuperados coinciden con los persistidos
@@ -92,6 +92,58 @@ class DoctrineFeedRepositoryTest extends KernelTestCase
         $this->repository->save($feed2, true);
 
 
+    }
+
+    public function testSoftDeletedFeedIsHiddenByDefault(): void
+    {
+
+        $feed = new Feed(
+            'Titulo Vivo',
+            'https://test.com/vivo',
+            SourceEnum::EL_MUNDO,
+            'Body',
+            new \DateTimeImmutable()
+        );
+        $this->repository->save($feed, true);
+        $id = $feed->getId();
+
+        // Borrado
+        $feed->softDelete();
+        $this->repository->save($feed, true);
+
+        // Limpiar memoria
+        $this->entityManager->clear();
+
+        // Buscar
+        $result = $this->repository->findById($id);
+
+        // Debe ser invisible
+        $this->assertNull($result, 'El feed borrado debería ser invisible por defecto.');
+    }
+
+    public function testFindOneIncludingDeletedCanSeeDeletedFeed(): void
+    {
+        // Crear y borrar
+        $feed = new Feed(
+            'Titulo Fantasma',
+            'https://test.com/fantasma',
+            SourceEnum::EL_MUNDO,
+            'Body',
+            new \DateTimeImmutable()
+        );
+        $feed->softDelete();
+        $this->repository->save($feed, true);
+
+        $this->entityManager->clear();
+
+        $deletedFeed = $this->repository->findOneByUrlAndSourceIncludingDeleted(
+            'https://test.com/fantasma',
+            SourceEnum::EL_MUNDO
+        );
+
+        // Debe encontrarlo
+        $this->assertNotNull($deletedFeed, 'El método IncludingDeleted debería encontrar registros borrados.');
+        $this->assertTrue($deletedFeed->isDeleted());
     }
 
     protected function tearDown(): void

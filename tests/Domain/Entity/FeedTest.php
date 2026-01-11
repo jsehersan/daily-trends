@@ -39,4 +39,40 @@ class FeedTest extends TestCase
         $this->assertEquals($image, $feed->getImage());
         $this->assertInstanceOf(\DateTimeImmutable::class, $feed->getPublishedAt());
     }
+    // Borramos
+    public function testSoftDeleteMarksFeedAsDeleted(): void
+    {
+        $feed = $this->createFeed();
+
+        $feed->softDelete();
+
+        $this->assertNotNull($feed->getDeletedAt());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $feed->getDeletedAt());
+        $this->assertTrue($feed->isDeleted());
+    }
+    // Probamos restaurar
+    public function testRecoverRestoresFeed(): void
+    {
+        $feed = $this->createFeed();
+        $feed->softDelete(); // La borramos
+
+        $this->assertTrue($feed->isDeleted()); // Check de seguridad
+
+        $feed->recover(); // La recuperamos
+
+        $this->assertNull($feed->getDeletedAt());
+        $this->assertFalse($feed->isDeleted());
+    }
+
+    private function createFeed(): Feed
+    {
+        return new Feed(
+            title: $this->faker->sentence(),
+            url: $this->faker->url(),
+            source: SourceEnum::EL_MUNDO,
+            body: $this->faker->text(),
+            publishedAt: new \DateTimeImmutable(),
+            image: $this->faker->imageUrl()
+        );
+    }
 }
