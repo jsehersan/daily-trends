@@ -22,7 +22,10 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: false
-
+        filters:
+            soft_delete:
+                class: App\Infrastructure\Persistence\Doctrine\Filter\SoftDeleteFilter
+                enabled: true
 when@test:
     doctrine:
         dbal:

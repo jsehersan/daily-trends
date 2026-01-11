@@ -2,7 +2,9 @@
 
 namespace App\Domain\Entity;
 
+use App\Domain\Contract\SoftDeletableInterface;
 use App\Domain\Enum\SourceEnum;
+use App\Domain\Trait\SoftDeletableTrait;
 use App\Domain\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: 'feeds')]
 #[ORM\UniqueConstraint(name: 'unique_source_url', columns: ['source', 'url'])]
 
-class Feed
+class Feed implements SoftDeletableInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
@@ -24,7 +26,8 @@ class Feed
     private ?Uuid $id = null;
 
     //Usamos un trait para dejar mas limpio la entity y darle la capacidad de tener timestamps 
-    use TimestampableTrait;
+    use TimestampableTrait,
+        SoftDeletableTrait;
 
     public function __construct(
         #[ORM\Column(length: 255)]
