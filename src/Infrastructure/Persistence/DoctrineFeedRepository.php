@@ -4,8 +4,10 @@ namespace App\Infrastructure\Persistence;
 
 use App\Application\DTO\Response\PaginatedResult;
 use App\Domain\Entity\Feed;
+use App\Domain\Exception\Feed\FeedAlreadyExistsException;
 use App\Domain\Repository\FeedRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,10 +20,21 @@ class DoctrineFeedRepository extends ServiceEntityRepository implements FeedRepo
 
     public function save(Feed $feed, bool $flush = false): void
     {
+
+        //Prevenimos la exception a cambio de un select extra TODO: revisar el impacto de en el rendimiento
+        $existing = $this->findOneBy(['url' => $feed->getUrl(), 'source' => $feed->getSource()]);
+        if ($existing && $existing->getId() !== $feed->getId()) {
+            throw FeedAlreadyExistsException::withUrl(
+                $feed->getUrl(),
+                $feed->getSource()->value
+            );
+        }
+
         $this->getEntityManager()->persist($feed);
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+
     }
 
     public function findOneByUrlAndSource(string $url, string $source): ?Feed

@@ -4,6 +4,7 @@ namespace App\Tests\Infrastructure\Persistence;
 
 use App\Domain\Entity\Feed;
 use App\Domain\Enum\SourceEnum;
+use App\Domain\Exception\Feed\FeedAlreadyExistsException;
 use App\Domain\Repository\FeedRepositoryInterface;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,8 +86,8 @@ class DoctrineFeedRepositoryTest extends KernelTestCase
             publishedAt: new \DateTimeImmutable()
         );
 
-        // Se espera una excepción de base de datos al intentar guardar un duplicado
-        $this->expectException(UniqueConstraintViolationException::class);
+        // Se espera una excepción de base de datos al intentar guardar un duplicado source/url
+        $this->expectException(FeedAlreadyExistsException::class);
 
         $this->repository->save($feed2, true);
 
