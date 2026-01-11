@@ -4,10 +4,10 @@ namespace App\Infrastructure\Persistence;
 
 use App\Application\DTO\Response\PaginatedResult;
 use App\Domain\Entity\Feed;
+use App\Domain\Enum\SourceEnum;
 use App\Domain\Exception\Feed\FeedAlreadyExistsException;
 use App\Domain\Repository\FeedRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -89,5 +89,27 @@ class DoctrineFeedRepository extends ServiceEntityRepository implements FeedRepo
     public function findById(string $id): ?Feed
     {
         return $this->find($id);
+    }
+
+
+    public function findOneByUrlAndSourceIncludingDeleted(string $url, SourceEnum $source): ?Feed
+    {
+        // Desactivamos filtros
+        if ($this->getEntityManager()->getFilters()->isEnabled('soft_delete')) {
+            $this->getEntityManager()->getFilters()->disable('soft_delete');
+        }
+
+        // Buscamos
+        $feed = $this->findOneBy([
+            'url' => $url,
+            'source' => $source
+        ]);
+
+        // Volvemos a activar
+        if (!$this->getEntityManager()->getFilters()->isEnabled('soft_delete')) {
+            $this->getEntityManager()->getFilters()->enable('soft_delete');
+        }
+
+        return $feed;
     }
 }

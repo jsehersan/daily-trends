@@ -4,6 +4,7 @@ namespace App\Domain\Repository;
 
 use App\Application\DTO\Response\PaginatedResult;
 use App\Domain\Entity\Feed;
+use App\Domain\Enum\SourceEnum;
 
 interface FeedRepositoryInterface
 {
@@ -13,4 +14,5 @@ interface FeedRepositoryInterface
     public function truncate(): void;
     public function findAllPaginated(int $page, int $limit, string $sortBy, string $sortOrder): PaginatedResult;
     public function findById(string $id): ?Feed;
+    public function findOneByUrlAndSourceIncludingDeleted(string $url, SourceEnum $source): ?Feed;
 }

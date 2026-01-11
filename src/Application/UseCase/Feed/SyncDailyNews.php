@@ -39,10 +39,12 @@ class SyncDailyNews
 
 
                 foreach ($feeds as $feed) {
-                    //Controlamos si ya existe
-                    $exists = $this->feedRepository->findOneByUrlAndSource(
+                    // Controlamos si ya existe
+                    // Todo: manejar feeds borrados (softdelete) de momento se queda asi para no tirar un 500
+                    // Si se ha borrado, lo salta. La solucion optima es hacer como en la api, evaluar y restaurar si fuera necesario.
+                    $exists = $this->feedRepository->findOneByUrlAndSourceIncludingDeleted(
                         $feed->getUrl(),
-                        $feed->getSource()->value
+                        $feed->getSource()
                     );
                     if ($exists) {
                         $skippedCount++;
