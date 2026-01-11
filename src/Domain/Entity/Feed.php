@@ -3,6 +3,7 @@
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\SourceEnum;
+use App\Domain\Trait\TimestampableTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -10,6 +11,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'feeds')]
 #[ORM\UniqueConstraint(name: 'unique_source_url', columns: ['source', 'url'])]
 
@@ -21,8 +23,8 @@ class Feed
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeImmutable $scrapedAt;
+    //Usamos un trait para dejar mas limpio la entity y darle la capacidad de tener timestamps 
+    use TimestampableTrait;
 
     public function __construct(
         #[ORM\Column(length: 255)]
@@ -46,10 +48,14 @@ class Feed
         #[Assert\NotNull]
         private \DateTimeImmutable $publishedAt,
 
+
         #[ORM\Column(length: 500, nullable: true)]
         private ?string $image = null,
+
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+        private ?\DateTimeImmutable $scrapedAt = null,
     ) {
-        $this->scrapedAt = new \DateTimeImmutable();
+
     }
 
 
@@ -81,8 +87,32 @@ class Feed
     {
         return $this->image;
     }
-    public function getScrapedAt(): \DateTimeImmutable
+    public function getScrapedAt(): ?\DateTimeImmutable
     {
         return $this->scrapedAt;
+    }
+
+    //Mantenemos el original si es null lo que viene
+    public function update(
+        ?string $title = null,
+        ?string $url = null,
+        ?string $body = null,
+        ?SourceEnum $source = null,
+        ?\DateTimeImmutable $publishedAt = null,
+        ?string $image = null,
+        bool $removeImage = false
+    ): void {
+        $this->title = $title ?? $this->title;
+        $this->url = $url ?? $this->url;
+        $this->body = $body ?? $this->body;
+        $this->source = $source ?? $this->source;
+        $this->publishedAt = $publishedAt ?? $this->publishedAt;
+
+        // Gestión de imagen
+        if ($removeImage) {
+            $this->image = null;
+        } elseif ($image !== null) {
+            $this->image = $image;
+        }
     }
 }

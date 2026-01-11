@@ -95,7 +95,8 @@ abstract class AbstractHtmlScraper implements NewsScraperInterface
             source: $this->getSource(),
             body: $body,
             publishedAt: $publishedAt,
-            image: $imgSrc
+            image: $imgSrc,
+            scrapedAt: new \DateTimeImmutable()
         );
     }
 

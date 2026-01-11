@@ -13,7 +13,7 @@ readonly class FeedDetailResponse
         public string $source,
         public string $url,
         public string $publishedAt,
-        public string $scrapedAt,
+        public ?string $scrapedAt,
         public ?string $image,
     ) {
     }
@@ -27,7 +27,8 @@ readonly class FeedDetailResponse
             source: $feed->getSource()->value,
             url: $feed->getUrl(),
             publishedAt: $feed->getPublishedAt()->format(\DateTime::ATOM),
-            scrapedAt: $feed->getScrapedAt()->format(\DateTime::ATOM),
+            //Puede ser null si es un feed manual
+            scrapedAt: $feed->getScrapedAt()?->format(\DateTime::ATOM),
             image: $feed->getImage(),
         );
     }
