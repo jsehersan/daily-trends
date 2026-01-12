@@ -12,7 +12,7 @@ Daily Trends es un agregador de noticias de portada desarrollado con **Symfony 7
 
 6.  **Documentación Swagger**: Disponible en `/api/doc`.
 
-![Arquitectura del Sistema](docs/api_doc.png)
+![Documentación Swagger](docs/api_doc.png)
 
 ## 2. Arquitectura y Diseño del Sistema
 
@@ -46,3 +46,35 @@ La solución de scraping se ha diseñado para ser altamente escalable y resilien
 
 ![Arquitectura del Sistema](docs/diagrama_general.png)
 
+
+
+## 7. Extras & Bonus Track 
+
+Para esta prueba técnica, he decidido agotar el tiempo de entrega e ir un paso más allá de los requisitos obligatorios, implementando dos funcionalidades que demuestran la flexibilidad de la arquitectura:
+
+
+
+### Persistencia Intercambiable (Bonus: MongoDB)
+Gracias al desacoplamiento de la arquitectura hexagonal, el sistema permite cambiar el motor de persistencia sin modificar la lógica de negocio ni los casos de uso.
+* **Implementación de MongoDB**: Se ha desarrollado el adaptador `MongoFeedRepository` utilizando **Doctrine ODM**.
+* **Conmutación en Caliente**: El sistema permite alternar entre **MySQL** y **MongoDB** simplemente modificando el alias de la interfaz en el archivo `config/services.yaml`.
+
+*Nota: No me había dado tiempo de implementar la suite de tests automatizados sobre MongoDB, por lo que la suite de tests automatizados se mantiene configurada sobre MySQL, si bien la implementación de MongoDB es 100% funcional para el flujo de la aplicación y el Dashboard.*
+
+```yaml
+# Activar MySQL:
+App\Domain\Repository\FeedRepositoryInterface: '@App\Infrastructure\Persistence\Doctrine\DoctrineFeedRepository'
+
+# Activar MongoDB (Bonus):
+# App\Domain\Repository\FeedRepositoryInterface: '@App\Infrastructure\Persistence\Mongo\MongoFeedRepository'
+```
+
+
+
+### Dashboard DEMO
+He desarrollado una interfaz visual personalizada (Twig) para que la revisión de la prueba sea ágil, intuitiva y profesional.
+* **Gestión Visual**: Un "News Feed" moderno con las imágenes reales obtenidas por el scraper, permitiendo monitorizar el estado de la base de datos de un vistazo.
+* **Panel de Control**: Botones integrados para disparar el motor de scraping manualmente (**"Sincronizar"**) y realizar limpieza total de la base de datos (**"Limpiar Todo"**).
+* **Acceso Directo**: Acceso inmediato a la documentación **Swagger** y al **Repositorio de código** desde la propia interfaz de usuario.
+
+![Dashboard DEMO](docs/dashboard.png)

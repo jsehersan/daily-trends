@@ -8,3 +8,8 @@ api_feeds:
     prefix: '%app.api_root%/v1/feeds'
     defaults:
         _format: json
+
+web_dashboard:
+    resource: ../src/Infrastructure/Controller/Web/
+    type: attribute
+

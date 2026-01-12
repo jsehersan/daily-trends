@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Trends | {{ author }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #3b82f6; --danger: #ef4444; --bg: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); margin: 0; color: var(--primary); }
+        
+        .navbar { background: #1e293b; color: white; padding: 0.8rem 2rem; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+        .logo-box { background: white; padding: 5px; border-radius: 6px; display: flex; align-items: center; width: 32px; height: 32px; }
+        .logo-box img { max-width: 100%; height: auto; }
+
+        /* PERFIL CLICABLE */
+        .user-profile-link { text-decoration: none; color: white; display: flex; align-items: center; gap: 12px; transition: opacity 0.2s; }
+        .user-profile-link:hover { opacity: 0.8; }
+        .user-info { text-align: right; border-right: 1px solid #334155; padding-right: 15px; margin-right: 15px; }
+        .user-name { display: block; font-weight: 700; font-size: 0.85rem; }
+        .user-role { font-size: 0.65rem; color: var(--accent); font-weight: 800; text-transform: uppercase; }
+        .linkedin-icon { font-size: 1.4rem; color: #94a3b8; }
+
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .hero { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 25px; border-radius: 16px; border: 1px solid #e2e8f0; }
+        .hero-text h2 { font-size: 1.8rem; margin: 0; letter-spacing: -1px; }
+        
+        .controls { display: flex; align-items: center; gap: 10px; }
+        .doc-btn { text-decoration: none; font-weight: 800; font-size: 0.7rem; border-radius: 8px; padding: 10px 15px; transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        .btn-swagger { border: 1.5px solid var(--accent); color: var(--accent); }
+        .btn-swagger:hover { background: var(--accent); color: white; }
+        .btn-github { border: 1.5px solid #475569; color: #475569; }
+        .btn-github:hover { background: #475569; color: white; }
+        
+        /* BOTONES ACCIÓN */
+        .btn-sync { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; min-width: 140px; }
+        .btn-truncate { background: white; color: var(--danger); border: 1.5px solid var(--danger); padding: 11px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-truncate:hover { background: var(--danger); color: white; }
+
+        /* GRID */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .news-card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; display: flex; flex-direction: column; transition: 0.2s; }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .card-image { height: 160px; background-size: cover; background-position: center; position: relative; }
+        .source-badge { position: absolute; top: 10px; right: 10px; padding: 4px 10px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; color: white; }
+        .source-mundo { background: #ef4444; }
+        .source-pais { background: #0ea5e9; }
+        
+        .card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-content h3 { font-size: 1rem; margin: 10px 0; line-height: 1.4; height: 2.8rem; overflow: hidden; }
+        .card-content p { font-size: 0.8rem; color: #64748b; margin-bottom: 15px; flex-grow: 1; }
+        .btn-news { text-decoration: none; color: var(--accent); font-weight: 800; font-size: 0.75rem; }
+
+        /* PAGINACIÓN */
+        .page-item { padding: 10px 18px; background: white; border: 1px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #0f172a; font-weight: 700; font-size: 0.9rem; transition: all 0.2s; }
+        .page-item:hover { border-color: var(--accent); color: var(--accent); }
+        .page-item.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        footer { padding: 40px; text-align: center; color: #94a3b8; font-size: 0.75rem; border-top: 1px solid #e2e8f0; margin-top: 50px; }
+        #toast { position: fixed; bottom: 25px; right: 25px; background: #10b981; color: white; padding: 15px 30px; border-radius: 12px; font-weight: 700; display: none; z-index: 200; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="brand">
+            <div class="logo-box"><img src="https://www.casfid.es/es/images/casfid_logo_BlauTech.webp" alt="Logo"></div>
+            <span style="font-weight: 800; font-size: 0.9rem; letter-spacing: 0.5px; margin-left: 10px;">DAILY TRENDS</span>
+        </a>
+
+        <a href="https://www.linkedin.com/in/hernandez-jose-m" target="_blank" class="user-profile-link" title="Ir a mi LinkedIn">
+            <div class="user-info">
+                <span class="user-name">{{ author }}</span>
+                <span class="user-role">Backend Developer</span>
+            </div>
+            <i class="fab fa-linkedin linkedin-icon"></i>
+        </a>
+    </nav>
+
+    <div class="container">
+        <header class="hero">
+            <div class="hero-text">
+                <h2>Noticias</h2>
+                <p style="margin:5px 0 0 0; color:#64748b; font-size:0.9rem; font-weight:600;">{{ total }} registros totales</p>
+            </div>
+            <div class="controls">
+                <a href="{{ path('app.swagger_ui') }}" target="_blank" class="doc-btn btn-swagger"><i class="fas fa-book"></i> SWAGGER API DOC</a>
+                <a href="https://github.com/jsehersan/daily-trends" target="_blank" class="doc-btn btn-github"><i class="fab fa-github"></i> REPO</a>
+                
+                <button onclick="truncateData()" id="btn-truncate" class="btn-truncate">LIMPIAR TODO</button>
+                <button onclick="sync()" id="btn-sync" class="btn-sync">SINCRONIZAR (5)</button>
+            </div>
+        </header>
+
+        <div id="toast">✅ PROCESO COMPLETADO</div>
+
+        <main class="news-grid">
+            {% for item in news %}
+                <article class="news-card">
+                    <div class="card-image" style="background-image: url('{{ item.image ?: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=500' }}')">
+                        {% set sourceClass = 'mundo' in item.source.value|lower ? 'source-mundo' : 'source-pais' %}
+                        <span class="source-badge {{ sourceClass }}">{{ item.source.value }}</span>
+                    </div>
+                    <div class="card-content">
+                        <time style="font-size: 0.65rem; color: #94a3b8; font-weight: 700;">{{ item.publishedAt|date('d M, Y') }}</time>
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.body|striptags|slice(0, 85) }}...</p>
+                        <a href="{{ item.url }}" target="_blank" class="btn-news">LEER ORIGINAL →</a>
+                    </div>
+                </article>
+            {% else %}
+                <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #64748b;">
+                    <i class="fas fa-newspaper" style="font-size: 3rem; opacity: 0.2; margin-bottom: 15px; display: block;"></i>
+                    No hay noticias en la base de datos. ¡Dale a Sincronizar!
+                </div>
+            {% endfor %}
+        </main>
+
+        {% if totalPages > 0 %}
+        <nav class="pagination" style="margin: 50px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            {% if currentPage > 1 %}
+                <a href="{{ path('app_dashboard', {page: currentPage - 1}) }}" class="page-item">«</a>
+            {% endif %}
+
+            {% for i in 1..totalPages %}
+                {% if i == 1 or i == totalPages or (i >= currentPage - 2 and i <= currentPage + 2) %}
+                    <a href="{{ path('app_dashboard', {page: i}) }}" class="page-item {{ i == currentPage ? 'active' : '' }}">{{ i }}</a>
+                {% elseif i == currentPage - 3 or i == currentPage + 3 %}
+                    <span style="padding: 8px 10px; color: #94a3b8;">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if currentPage < totalPages %}
+                <a href="{{ path('app_dashboard', {page: currentPage + 1}) }}" class="page-item">»</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+
+    <footer>
+        &copy; 2026 Casfid Technical Test | Made with ❤ by <strong>{{ author }}</strong>
+    </footer>
+
+    <script>
+        async function sync() {
+            const btn = document.getElementById('btn-sync');
+            btn.disabled = true;
+            btn.innerText = 'Scrapeando...';
+
+            try {
+                const response = await fetch("{{ path('api_feeds_sync') }}?limit=5", { method: 'POST' });
+                if (response.ok) {
+                    showToast();
+                    setTimeout(() => location.reload(), 1200);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = 'SINCRONIZAR (5)';
+            }
+        }
+
+        async function truncateData() {
+            if (!confirm('¿Borrar todas las noticias de la base de datos?')) return;
+            const btn = document.getElementById('btn-truncate');
+            btn.disabled = true;
+            btn.innerText = 'Borrando...';
+
+            try {
+                const response = await fetch("{{ path('api_feeds_truncate') }}", { method: 'POST' });
+                if (response.ok) {
+                    location.reload();
+                }
+            } catch (err) {
+                alert('Error al limpiar datos');
+                btn.disabled = false;
+                btn.innerText = 'LIMPIAR TODO';
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

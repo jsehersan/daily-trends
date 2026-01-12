@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Persistence;
+namespace App\Infrastructure\Persistence\Doctrine;
 
 use App\Application\DTO\Response\PaginatedResult;
 use App\Domain\Entity\Feed;

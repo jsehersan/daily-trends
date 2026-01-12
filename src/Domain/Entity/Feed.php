@@ -12,53 +12,63 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB; // <--- Importante
+
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Table(name: 'feeds')]
 #[ORM\UniqueConstraint(name: 'unique_source_url', columns: ['source', 'url'])]
-
+#[MongoDB\Document(collection: "feeds")] 
+#[MongoDB\UniqueIndex(keys: ['source' => 'asc', 'url' => 'asc'])]
 class Feed implements SoftDeletableInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[MongoDB\Id(strategy: "NONE", type: "uuid")]
     private ?Uuid $id = null;
 
-    //Usamos un trait para dejar mas limpio la entity y darle la capacidad de tener timestamps 
-    use TimestampableTrait,
-        SoftDeletableTrait;
+    use TimestampableTrait, SoftDeletableTrait;
 
     public function __construct(
         #[ORM\Column(length: 255)]
+        #[MongoDB\Field(type: "string")] 
         #[Assert\NotBlank]
         private string $title,
 
         #[ORM\Column(length: 500)]
+        #[MongoDB\Field(type: "string")]
         #[Assert\NotBlank]
         #[Assert\Url]
         private string $url,
 
         #[ORM\Column(length: 50, enumType: SourceEnum::class)]
+        #[MongoDB\Field(type: "string", enumType: SourceEnum::class)] 
         #[Assert\NotNull]
         private SourceEnum $source,
 
         #[ORM\Column(type: Types::TEXT)]
+        #[MongoDB\Field(type: "string")]
         #[Assert\NotBlank]
         private string $body,
 
         #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+        #[MongoDB\Field(type: "date_immutable")] 
         #[Assert\NotNull]
         private \DateTimeImmutable $publishedAt,
 
-
         #[ORM\Column(length: 500, nullable: true)]
+        #[MongoDB\Field(type: "string", nullable: true)]
         private ?string $image = null,
 
         #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+        #[MongoDB\Field(type: "date_immutable", nullable: true)]
         private ?\DateTimeImmutable $scrapedAt = null,
     ) {
-
+        //Si persistimos en Mongo, el ID no puede ser nulo al insertar
+        // ya que no usamos la estrategia AUTO de Mongo, sino UUIDs de Symfony.
+        $this->id = $this->id ?? Uuid::v4();
     }
 
 
