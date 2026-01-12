@@ -100,7 +100,7 @@ class UpdateFeedControllerTest extends WebTestCase
             json_encode($payload)
         );
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(422);
         $data = json_decode($client->getResponse()->getContent(), true);
 
         //Respuesta tipo de un error de validacion en mi dominio

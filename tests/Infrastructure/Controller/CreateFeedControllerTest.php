@@ -77,8 +77,7 @@ class CreateFeedControllerTest extends WebTestCase
             json_encode($invalidPayload)
         );
 
-        // Estamos devolviendo 400 en nuestro ApiExceptionListener
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(422);
     }
 
     public function testItPreventsDuplicateFeeds(): void

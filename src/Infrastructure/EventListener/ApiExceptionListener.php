@@ -22,7 +22,7 @@ class ApiExceptionListener
     }
     public function onKernelException(ExceptionEvent $event): void
     {
-        
+
         $request = $event->getRequest();
 
         // Solo seguimos si la peticion es json (configurado en routes.yaml)
@@ -52,7 +52,7 @@ class ApiExceptionListener
             $previous = $exception->getPrevious();
             if ($previous instanceof ValidationFailedException) {
                 $type = 'validation_error';
-                $statusCode = 400; // Bad Request
+                $statusCode = 422; // Bad Request
                 $message = 'Validation failed';
                 $details = $this->formatValidationErrors($previous);
             }
@@ -81,9 +81,9 @@ class ApiExceptionListener
         if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'dev') {
             $data['debug'] = [
                 'class' => get_class($exception),
-                'message' => $exception->getMessage(), 
-                'file' => $exception->getFile(),       
-                'line' => $exception->getLine(),       
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
                 'trace' => $this->formatTrace($exception->getTrace()),
             ];
         }

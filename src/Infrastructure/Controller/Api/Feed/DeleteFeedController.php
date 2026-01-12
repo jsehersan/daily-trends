@@ -8,7 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Feeds')]
 class DeleteFeedController extends AbstractController
 {
     public function __construct(
@@ -17,6 +19,17 @@ class DeleteFeedController extends AbstractController
     }
 
     #[Route(path: '{id}', name: 'api_feeds_delete', methods: ['DELETE'])]
+    #[OA\Parameter(
+        name: 'id',
+        in: 'path',
+        description: 'UUID de la noticia a eliminar',
+        schema: new OA\Schema(type: 'string', format: 'uuid')
+    )]
+    #[OA\Response(
+        response: 204,
+        description: 'Noticia eliminada correctamente (Sin contenido)'
+    )]
+    #[OA\Response(response: 404, description: 'La noticia no existe o ya fue eliminada')]
     public function __invoke(Uuid $id): JsonResponse
     {
 
