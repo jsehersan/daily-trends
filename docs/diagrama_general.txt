@@ -1,0 +1,62 @@
+graph LR
+    %% Paleta de colores de alto contraste y legibilidad
+    classDef entrada fill:#f1f5f9,stroke:#1e293b,stroke-width:2px,color:#1e293b;
+    classDef aplicacion fill:#fef9c3,stroke:#854d0e,stroke-width:2px,color:#854d0e;
+    classDef dominio fill:#ffe4e6,stroke:#9f1239,stroke-width:2px,color:#9f1239;
+    classDef infra fill:#dcfce7,stroke:#166534,stroke-width:2px,color:#166534;
+
+    %% BLOQUE 1: PUNTOS DE ENTRADA / SALIDA API
+    subgraph IN_OUT [Puntos de Entrada y Respuesta]
+        API[API Rest Controllers]:::entrada
+        CMD[CLI: app:sync-news]:::entrada
+    end
+
+    %% BLOQUE 2: PROCESO (ORQUESTACIÓN)
+    subgraph APP [Capa de Aplicación]
+        UC[Use Cases]:::aplicacion
+        DTO[DTOs / Validation]:::aplicacion
+    end
+
+    %% BLOQUE 3: CONTRATOS Y MODELO
+    subgraph DOM [Capa de Dominio]
+        INT[FeedRepositoryInterface]:::dominio
+        S_INT[NewsScraperInterface]:::dominio
+        ENT[Entity: Feed]:::dominio
+    end
+
+    %% BLOQUE 4: INFRAESTRUCTURA Y PERSISTENCIA
+    subgraph OUT [Infraestructura / Salida]
+        REPO[DoctrineFeedRepository]:::infra
+        ABS[AbstractHtmlScraper]:::infra
+        SCR[Scrapers Específicos]:::infra
+        DB[(MySQL Database)]:::infra
+        CL[Scraping Client]:::infra
+    end
+
+    %% FLUJO DE EJECUCIÓN (IDA Y VUELTA EN API)
+    API -- "Petición" --> UC
+    UC -- "Retorna Data" --> API
+    CMD --> UC
+
+    UC --> DTO
+    UC --> INT
+    UC --> S_INT
+
+    %% IMPLEMENTACIÓN Y RELACIONES
+    REPO -.->|Implementa| INT
+    ABS -.->|Implementa| S_INT
+    SCR -- "Hereda de" --> ABS
+    
+    %% PERSISTENCIA Y RED
+    REPO --> DB
+    REPO -.->|Hidrata| ENT
+    ABS --> CL
+
+    %% ANOTACIONES TÉCNICAS (ESTILO POST-IT)
+    note1(El Use Case solo conoce interfaces):::aplicacion
+    note2(Definimos todas las reglas con las que nos comunicamo con los use case):::infra
+    note3(La infraestructura implementa el contrato del dominio,repo y scraper):::infra
+
+    UC -.-> note1
+    INT -.-> note2
+    CL -.-> note3
